@@ -16,15 +16,26 @@ const authorization = getHeader($request.headers, "authorization");
 const match = /^Basic\s+(.+)$/i.exec(authorization);
 
 if (match) {
-  const tokenSaved = $persistentStore.write(match[1], TOKEN_KEY);
+  const token = match[1];
   const ua = getHeader($request.headers, "user-agent");
-  const uaSaved = !ua || $persistentStore.write(ua, UA_KEY);
+  const oldToken = $persistentStore.read(TOKEN_KEY) || "";
+  const oldUA = $persistentStore.read(UA_KEY) || "";
+  const tokenChanged = token !== oldToken;
+  const uaChanged = Boolean(ua && ua !== oldUA);
 
-  if (tokenSaved && uaSaved) {
-    console.log("[iios.club] token 与 User-Agent 获取成功");
-    $notification.post("iios.club", "✅ 登录凭证获取成功", "现在可以运行定时签到脚本");
+  // 同一个页面通常会连续请求多个 /api/ 接口。凭证未变化时不重复写入和通知。
+  if (!tokenChanged && !uaChanged) {
+    console.log("[iios.club] 登录凭证未变化，跳过重复保存");
   } else {
-    $notification.post("iios.club", "❌ 保存失败", "请检查 Loon 本地存储权限");
+    const tokenSaved = !tokenChanged || $persistentStore.write(token, TOKEN_KEY);
+    const uaSaved = !uaChanged || $persistentStore.write(ua, UA_KEY);
+
+    if (tokenSaved && uaSaved) {
+      console.log("[iios.club] token 与 User-Agent 已更新");
+      $notification.post("iios.club", "✅ 登录凭证已更新", "现在可以运行定时签到脚本");
+    } else {
+      $notification.post("iios.club", "❌ 保存失败", "请检查 Loon 本地存储权限");
+    }
   }
 } else {
   console.log("[iios.club] 当前请求没有 Authorization: Basic 请求头");
