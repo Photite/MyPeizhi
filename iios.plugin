@@ -1,12 +1,10 @@
 #!name=iios.club 定时签到
-#!desc=自动抓取 iios.club 登录凭证，每天 01:00 调用网站原版 WASM 签到
+#!desc=自动抓取 iios.club 登录凭证，每天 01:30 以主屏幕 Web App 模式签到
 #!author=Photite
 #!homepage=https://github.com/Photite/MyPeizhi
-#!version=3.0.0
-
+#!version=4.0.0
 [MITM]
 hostname = www.iios.club
-
 [Script]
-http-request ^https:\/\/www\.iios\.club\/api\/ tag=iios凭证, script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/iios.cookie.js?v=3, requires-body=false, timeout=10, enable=true
-cron "0 1 * * *" script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/iios.js?v=3, tag=iios签到, timeout=60, enable=true
+http-request ^https:\/\/www\.iios\.club\/api\/ tag=iios凭证, script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/iios.cookie.js?v=4, requires-body=false, timeout=10, enable=true
+cron "30 1 * * *" script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/iios.js?v=4, tag=iios签到, timeout=60, enable=true
