@@ -4,6 +4,7 @@
 const IIOS = {
   tokenKey: 'iios.club.token',
   uaKey: 'iios.club.ua',
+  cookieKey: 'iios.club.cookie',
   wasmUrl: 'https://www.iios.club/static/media/web_wasm_bg.534e8f19399f44e1496d.wasm',
   apiUrl: 'https://www.iios.club/api/task',
   manualToken: '', // 可选：只填 Basic 后面的 token，不要带 "Basic "。
@@ -142,6 +143,7 @@ async function checkIn() {
   const token = IIOS.manualToken || $persistentStore.read(IIOS.tokenKey);
   if (!token) throw new Error('尚未捕获 token；请先在浏览器登录 iios.club 并访问任一页面');
   const ua = $persistentStore.read(IIOS.uaKey) || IIOS.defaultUA;
+  const cookie = $persistentStore.read(IIOS.cookieKey) || '';
 
   // Loon Tunnel 将 location / navigator 定义为不可重新配置属性。
   // 不修改运行时全局对象，改由下方 WASM 适配层提供站点环境值。
@@ -151,10 +153,12 @@ async function checkIn() {
   await _0x5642a5(wasmBytes);
 
   const timestamp = Date.now();
-  const headers = {
+  // 与网页中的 Axios 请求拦截器保持一致；UA、Origin、Referer、Cookie
+  // 均由浏览器在网络层附加，不应参与 WASM 签名。
+  const signingHeaders = {
+    'Accept': 'application/json, text/plain, */*',
     'Content-Type': 'text/plain',
     'Authorization': 'Basic ' + token,
-    'User-Agent': ua,
     'X-Timestamp': timestamp,
   };
   const config = {
@@ -164,16 +168,25 @@ async function checkIn() {
     timeout: 120000,
     toast: true,
     showError: true,
-    headers,
-    data: JSON.stringify({ type: 2, webapp: false }),
+    headers: signingHeaders,
+    // 网站前端在从 iPhone 主屏幕 Web App 运行时会发送 webapp: true，奖励为每日 2 积分。
+    data: JSON.stringify({ type: 2, webapp: true }),
   };
   const encrypted = await function (value) {
     return _0x2cba0b(_0x122b4b.e(_0x3e46a6(value)));
   }(config);
-  headers['X-Signature'] = encrypted.s;
+  signingHeaders['X-Signature'] = encrypted.s;
   config.data = encrypted.d;
 
-  const { response, data } = await postTask(headers, encrypted.d);
+  const requestHeaders = Object.assign({}, signingHeaders, {
+    'User-Agent': ua,
+    'Origin': 'https://www.iios.club',
+    'Referer': 'https://www.iios.club/',
+    'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+  });
+  if (cookie) requestHeaders['Cookie'] = cookie;
+
+  const { response, data } = await postTask(requestHeaders, encrypted.d);
   if (!response) throw new Error('无 HTTP 响应');
 
   if (IIOS.decryptResponse) {
