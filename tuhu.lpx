@@ -1,0 +1,13 @@
+#!name=途虎养车签到
+#!desc=途虎养车微信小程序每日签到；首次启用后进入签到或权益页面抓取 Cookie。
+#!author=MaYIHEI
+#!homepage=https://github.com/MaYIHEI/paperclip/tree/main/miniprogram/tuhu
+#!icon=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/tuhu.png
+#!tag=签到, 微信小程序, 途虎养车
+
+[Script]
+http-request https:\/\/api\.tuhu\.cn\/User\/(GetMemberSignInInfoAsync|GetRightsList) tag=途虎养车 Cookie, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/tuhu/tuhu.js, requires-body=false, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/tuhu.png
+cron "17 7 * * *" script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/tuhu/tuhu.js, tag=途虎养车签到, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/tuhu.png, enable=true
+
+[MITM]
+hostname = api.tuhu.cn

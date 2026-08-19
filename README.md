@@ -1,54 +1,33 @@
-# iios.club
+# Paperclip 微信小程序 · Loon 独立插件
 
-iios.club 每日签到，使用网站前端原版 WASM 动态生成加密 body、`X-Timestamp` 与 `X-Signature`。
+本目录依据 `miniprogram/README.md` 当前标记为“✅ 维护中”的项目生成，共 11 个独立 `.lpx`。每个插件均直接引用上游脚本，脚本更新后无需重新打包插件。
 
-## 文件
+| 文件 | 项目 | 默认执行时间 |
+|---|---|---:|
+| `ppmt.lpx` | 泡泡玛特 | 09:00 |
+| `tuhu.lpx` | 途虎养车 | 07:17 |
+| `haidilao.lpx` | 海底捞 | 07:23 |
+| `huisheng.lpx` | 惠省红包墙 | 00:05 |
+| `miniso.lpx` | 名创优品 | 07:37 |
+| `longde.lpx` | 龙德广场 | 08:05 |
+| `lhtj.lpx` | 龙湖天街 | 09:00 |
+| `songshan.lpx` | 松山棉店 | 08:20 |
+| `wedome.lpx` | 味多美 | 08:10 |
+| `bhg.lpx` | 北京华联 | 08:08 |
+| `linli.lpx` | 林里 | 10:00 |
 
-- `iios.cookie.js`：登录 token / User-Agent 抓取脚本（HTTP Request）。
-- `iios.js`：签到主脚本（Cron）。
-- `iios.plugin.template`：Loon 插件模板。
+## 使用
 
-脚本不会内置 HAR 中的账号信息。登录 token 只保存在 Loon 的 `$persistentStore`。
+1. 只导入需要的 `.lpx` 并启用。
+2. 确认 Loon 的 MITM 证书已安装并信任。
+3. 进入对应微信小程序及其签到、会员或活动页面，收到 Cookie 获取成功通知后即可。
+4. 插件会按表中时间每日执行，也可在 Loon 中手动运行对应脚本。
 
-## 使用步骤
+## 注意
 
-1. 将整个 `app/iios/` 目录上传到自己的 GitHub 仓库。
-2. 把 `iios.plugin.template` 中两处 `__RAW_BASE__` 替换为自己的 Raw 目录地址。
-3. 将文件重命名为 `iios.plugin`，用 Raw 链接导入 Loon。
-4. 确认 Loon MITM 证书已安装并信任。
-5. 使用 Safari 登录 `https://www.iios.club/`，进入任意会加载账号信息的页面。
-6. 收到“✅ 登录凭证获取成功”通知后，手动运行一次 `iios签到` 检查结果。
+- 龙德广场与北京华联使用同一会员体系，请二选一启用，避免重复执行。
+- `.lpx` 是 Loon 当前插件后缀；其内容格式与旧 `.plugin` 相同。
+- Cookie 保存在 Loon 持久化存储中，请勿公开日志、备份或抓包内容。
+- 本目录没有包含上游标记为“已归档”的脚本。
 
-Raw 目录地址格式：
-
-```text
-https://raw.githubusercontent.com/你的用户名/你的仓库/main/app/iios
-```
-
-插件 Raw 地址格式：
-
-```text
-https://raw.githubusercontent.com/你的用户名/你的仓库/main/app/iios/iios.plugin
-```
-
-## Loon 手动配置
-
-不使用插件时也可以分别添加：
-
-```ini
-[MITM]
-hostname = www.iios.club
-
-[Script]
-http-request ^https:\/\/www\.iios\.club\/api\/ tag=iios凭证, script-path=https://raw.githubusercontent.com/你的用户名/你的仓库/main/app/iios/iios.cookie.js, requires-body=false, timeout=10, enable=true
-cron "10 8 * * *" script-path=https://raw.githubusercontent.com/你的用户名/你的仓库/main/app/iios/iios.js, tag=iios签到, timeout=60, enable=true
-```
-
-## 注意事项
-
-- 当前实现面向 Loon，因为使用了 `$httpClient`、`$persistentStore` 与 `$notification`。
-- Loon 脚本引擎必须支持 `WebAssembly.instantiate`；主脚本会主动检测。
-- 主脚本会以二进制模式从 iios.club 下载当前已确认的 WASM 文件。
-- 网站更新带哈希的 WASM 文件名后，需要同步更新 `iios.js` 顶部的 `wasmUrl`。
-- 响应正文也是加密数据。为兼容不同 Loon 构建，默认只依据 HTTP 状态通知服务器是否接受请求。
-- 仅用于自己的账号。
+上游清单：https://github.com/MaYIHEI/paperclip/blob/main/miniprogram/README.md

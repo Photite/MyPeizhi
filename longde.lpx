@@ -1,0 +1,13 @@
+#!name=龙德广场签到
+#!desc=龙德广场微信小程序每日签到；与北京华联使用同一会员体系，请二选一启用。
+#!author=MaYIHEI
+#!homepage=https://github.com/MaYIHEI/paperclip/tree/main/miniprogram/longde
+#!icon=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/longde.png
+#!tag=签到, 微信小程序, 龙德广场
+
+[Script]
+http-request https:\/\/a\.china-smartech\.com\/restful\/mall\/\d+\/checkInForm tag=龙德广场 Cookie, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/longde/longde.js, requires-body=false, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/longde.png
+cron "5 8 * * *" script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/longde/longde.js, tag=龙德广场签到, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/longde.png, enable=true
+
+[MITM]
+hostname = a.china-smartech.com

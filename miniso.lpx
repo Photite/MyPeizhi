@@ -1,0 +1,13 @@
+#!name=名创优品签到
+#!desc=名创优品微信小程序每日签到领取 MINI 币；首次启用后进入会员页面抓取 Cookie。
+#!author=MaYIHEI
+#!homepage=https://github.com/MaYIHEI/paperclip/tree/main/miniprogram/miniso
+#!icon=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/miniso.png
+#!tag=签到, 微信小程序, 名创优品
+
+[Script]
+http-request ^https:\/\/member-center\.miniso\.com\/userinfo\/userinfo\/GetUserInfoV3 tag=名创优品 Cookie, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/miniso/miniso.js, requires-body=false, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/miniso.png
+cron "37 7 * * *" script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/miniso/miniso.js, tag=名创优品签到, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/miniso.png, enable=true
+
+[MITM]
+hostname = member-center.miniso.com
