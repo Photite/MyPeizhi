@@ -1,0 +1,12 @@
+#!name = 影视飓风Club自动签到
+#!desc = 单账号；打开签到页保存凭证，每天08:05查询并签到。脚本从Photite/MyPeizhi仓库加载。凭证失效需重新打开签到页。
+#!author = Local
+#!date = 2026-10-12
+
+[Script]
+http-response ^https:\/\/h5\.youzan\.com\/wscump\/checkin\/(check-in-info|get_activity_by_yzuid_v2|checkinV2)\.json\? script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/ysjf-checkin.js,requires-body=true,timeout=10,tag=影视飓风获取凭证,enable=true
+cron "5 8 * * *" script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/ysjf-checkin.js,timeout=60,tag=影视飓风每日签到,enable=true
+generic script-path=https://raw.githubusercontent.com/Photite/MyPeizhi/main/ysjf-checkin.js,timeout=60,tag=影视飓风手动签到,enable=true
+
+[MITM]
+hostname = h5.youzan.com
